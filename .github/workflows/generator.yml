@@ -1,1 +1,33 @@
+name: Auto Generate Redirect Files
 
+on:
+  push:
+    paths:
+      - "links.csv"
+      - "generate.py"
+      - ".github/workflows/generator.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run generator
+        run: |
+          python generate.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Auto-generate redirect files" || echo "No changes"
+          git push
